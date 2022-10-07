@@ -1,6 +1,7 @@
 package com.example.bingo;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import com.example.bingo.databinding.ActivityBingoBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -115,11 +117,14 @@ public class BingoActivity extends AppCompatActivity implements ValueEventListen
     };
 
     private void finishGame() {
-        if (isCreator()) {
-            FirebaseDatabase.getInstance().getReference("rooms")
-                    .child(roomKey)
-                    .removeValue();
-        }
+//        if (isCreator()) {
+        Log.d(TAG, "finishGame: remove game start");
+        Log.d(TAG, "finishGame: game roomkey | " + roomKey + " |");
+        FirebaseDatabase.getInstance().getReference("rooms")
+                .child(roomKey)
+                .removeValue();
+        Log.d(TAG, "finishGame: remove game done");
+//        }
 //        finish();
         System.exit(0);
     }
@@ -162,7 +167,6 @@ public class BingoActivity extends AppCompatActivity implements ValueEventListen
                 .child(roomKey)
                 .child("numbers")
                 .addValueEventListener(this);
-        //這裡錯誤 roomKey為空 往上
         FirebaseDatabase.getInstance().getReference("rooms")
                 .child(roomKey)
                 .child("status")
