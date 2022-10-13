@@ -6,6 +6,15 @@ plugins {
 android {
     compileSdk 32
 
+    signingConfigs {
+        release {
+            storeFile file( rootProject.projectDir.absolutePath + '\\app\\key_bingo.jks')
+            storePassword '112233'
+            keyPassword '112233'
+            keyAlias 'key0'
+        }
+    }
+
     defaultConfig {
         applicationId "com.example.bingo"
         minSdk 21
@@ -20,6 +29,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
