@@ -1,6 +1,5 @@
 package com.example.bingo;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -70,17 +68,11 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-//        setContentView(R.layout.activity_main); 不能用
         findViews();
 
 
         setSupportActionBar(binding.toolbar);
 
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-//        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-
-        //資料庫新增資料用
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,6 +100,15 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                     .show();
             }
         });
+
+        binding.delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseDatabase.getInstance().getReference("rooms")
+                        .removeValue();
+            }
+        });
+
         auth = FirebaseAuth.getInstance();
     }
 
@@ -135,24 +136,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         Query query = FirebaseDatabase.getInstance().getReference("rooms").orderByKey();
 
-        //測試
-//        Ref = FirebaseDatabase.getInstance().getReference("rooms");
-//        Log.d(TAG, "init1: " + Ref.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                //這可以印出資料庫完整資料
-//                Log.d(TAG, "onDataChange: calvin " + snapshot.getValue().toString());
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        }));
-
-
         FirebaseRecyclerOptions<Room> options = new FirebaseRecyclerOptions.Builder<Room>()
                 .setQuery(query, Room.class).build();
         Log.d(TAG, "findViews: calvin : " + options.getSnapshots());
+
         //這裡recyclerview不自建adapter是因為要使用firebase的adapter，需要再建立firebaseAdapter時，輸入自訂的class與holder
         adapter = new FirebaseRecyclerAdapter<Room, RoomHolder>(options) {
             @Override
@@ -220,12 +207,8 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_settings:
                 break;
@@ -253,35 +236,16 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                     .child(user.getUid())
                     .child("uid")
                     .setValue(user.getUid());
-//            if (member.getNickName() == null) {
-//                nicknameEdit = new EditText(this);
-//                new AlertDialog.Builder(this)
-//                        .setTitle("Nickname")
-//                        .setView(nicknameEdit)
-//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                String nickname = nicknameEdit.getText().toString();
-//                                member.setNickName(nickname);
-//                                FirebaseDatabase.getInstance()
-//                                        .getReference("users")
-//                                        .child(user.getUid())
-//                                        .setValue(member);
-//                            }
-//                        });
                 FirebaseDatabase.getInstance().getReference("users")
                         .child(user.getUid())
                         .addValueEventListener(this);
 //            }
         } else {
             Log.d(TAG, "onAuthStateChanged: go else start");
-            // 新方法
 
-            //課程方法
             startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
             .setAvailableProviders(Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build()
-//                new AuthUI.IdpConfig.GoogleBuilder().build()
             )).setIsSmartLockEnabled(false).build(),
                 RC_SIGN_IN);
             Log.d(TAG, "onAuthStateChanged: go else end");
@@ -337,11 +301,4 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     public void onClick(View v) {
 
     }
-
-//    @Override
-//    public boolean onSupportNavigateUp() {
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-//        return NavigationUI.navigateUp(navController, appBarConfiguration)
-//                || super.onSupportNavigateUp();
-//    }
 }

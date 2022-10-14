@@ -117,15 +117,12 @@ public class BingoActivity extends AppCompatActivity implements ValueEventListen
     };
 
     private void finishGame() {
-//        if (isCreator()) {
         Log.d(TAG, "finishGame: remove game start");
         Log.d(TAG, "finishGame: game roomkey | " + roomKey + " |");
         FirebaseDatabase.getInstance().getReference("rooms")
                 .child(roomKey)
                 .removeValue();
         Log.d(TAG, "finishGame: remove game done");
-//        }
-//        finish();
         System.exit(0);
     }
 
@@ -134,13 +131,11 @@ public class BingoActivity extends AppCompatActivity implements ValueEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityBingoBinding.inflate(getLayoutInflater());
-//        setContentView(R.layout.activity_bingo); //更換成下面getRoot
         setContentView(binding.getRoot());
-        // 這裡收到roomKey
+
         roomKey = getIntent().getStringExtra("ROOM_KEY");
         creator = getIntent().getBooleanExtra("IS_CREATOR", false);
 
-        //generate random numbers
         generateRandom();
 
         if (isCreator()) {
@@ -151,7 +146,7 @@ public class BingoActivity extends AppCompatActivity implements ValueEventListen
                         .child((i + 1) + "")
                         .setValue(false);
             }
-        } else { //joiner
+        } else {
             FirebaseDatabase.getInstance().getReference("rooms")
                     .child(roomKey)
                     .child("status")
@@ -193,7 +188,6 @@ public class BingoActivity extends AppCompatActivity implements ValueEventListen
 
     @SuppressLint("SetTextI18n")
     private void generateRandom() {
-        //generate random
         numbers = new ArrayList<>();
         buttons = new ArrayList<>();
         for (int i = 1; i <= NUMBER_COUNT; i++) {
@@ -219,8 +213,6 @@ public class BingoActivity extends AppCompatActivity implements ValueEventListen
                 numbers.get(numberPosition.get(num)).setPicked(true);
             }
             adapter.notifyDataSetChanged();
-            //bingo process
-//            Log.d(TAG, "onDataChange: " + nums);
             int bingo = 0;
             for (int i = 0; i < 5; i++) {
                 int sum = 0;
@@ -237,7 +229,6 @@ public class BingoActivity extends AppCompatActivity implements ValueEventListen
                 if (sum == 5)
                     bingo++;
             }
-//            Log.d(TAG, "onDataChange: bingo:" + bingo);
             if (bingo > 0) {
                 FirebaseDatabase.getInstance().getReference("rooms")
                         .child(roomKey)
