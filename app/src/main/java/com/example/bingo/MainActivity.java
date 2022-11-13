@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                             String key = roomRef.getKey();
                             Log.d(TAG, "onClick: Room key | " + key);
                             roomRef.child("key").setValue(key);
-//                            //enter game
+
                             Intent bingo = new Intent(MainActivity.this, BingoActivity.class);
                             bingo.putExtra("ROOM_KEY", key);
                             bingo.putExtra("IS_CREATOR", true);
@@ -239,7 +239,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 FirebaseDatabase.getInstance().getReference("users")
                         .child(user.getUid())
                         .addValueEventListener(this);
-//            }
         } else {
             Log.d(TAG, "onAuthStateChanged: go else start");
 
